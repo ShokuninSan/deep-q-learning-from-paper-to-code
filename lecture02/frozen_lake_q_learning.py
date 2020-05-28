@@ -13,6 +13,7 @@ EPSILON_END = 1.0
 class Agent:
 
     def __init__(self):
+
         self.state = None
         self.Q = {
             (s, a): 0 
@@ -20,7 +21,8 @@ class Agent:
             for a in range(self.env.action_space.n)
         }
 
-    def step(self, state, env, epsilon):
+    def step(self, env, epsilon):
+
         action = None
         if np.random.rand() > epsilon:
             # do random action selection
@@ -29,28 +31,37 @@ class Agent:
             # do greedy action selection
             action, _ = self._search_max_Q(state) 
 
-        new_state, reward, is_done, _ = env.step(action)
-       
-        _, max_Q_state_prime = self._search_max_Q(new_state)
+        old_state = self.state
+        self.state, reward, is_done, _ = env.step(action)
 
-        Q = self.Q[(self.state, action)]
+        return old_state, action, reward, self.state, is_done  
 
-        self.Q[(self.state, action)] = Q + ALPHA * (reward + GAMMA * max_Q_state_prime - Q) 
+
+def max_Q(self, state):
+    max_action = None
+    max_action_value = -1 
+    for (s, a), value in self.Q.items():
+        if s == state and value > max_action_value:
+            max_action = a
+            max_action_value = value
+    return max_action, max_action_value
+
+
+scores = []
+agent = Agent()
+env = gym.make('FrozenLake-v0')
+
+for g in range(N_GAMES):
+
+    state = env.reset()
+ 
+    while True:
+        action, _ = max_Q(state)
+
+        Q = self.Q[(state, action)]
+
+        self.Q[(self.state, action)] = Q + ALPHA * (reward + GAMMA * max_Q_state_prime - Q)
 
         self.state = new_state
 
-    def _search_max_Q(self, state):
-        max_action = None
-        max_action_value = -1 
-        for (s, a), value in self.Q.items():
-            if s == state and value > max_action_value:
-                max_action = a
-                max_action_value = value
-        return max_action, max_action_value
-
-scores = []
-
-for g in range(N_GAMES):
-    
-    while True:
         
